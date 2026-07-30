@@ -2,6 +2,7 @@ export * from './commands.js';
 export * from './equipment.js';
 export * from './errors.js';
 export * from './history.js';
+export * from './joins.js';
 export * from './model.js';
 export * from './openings.js';
 export * from './schema.js';

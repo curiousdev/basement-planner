@@ -1,6 +1,7 @@
 export * from './angle.js';
 export * from './bbox.js';
 export * from './errors.js';
+export * from './line.js';
 export * from './offset.js';
 export * from './polygon.js';
 export * from './segment.js';
