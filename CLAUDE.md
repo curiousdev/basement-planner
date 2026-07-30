@@ -106,9 +106,11 @@ an entity, that's a defect.
 - Named exports only. No default exports.
 - Files are `kebab-case.ts`; types and components are `PascalCase`; functions and values
   are `camelCase`; rule ids are `irc.r310.net-clear-area` style.
-- Errors: throw `AppError` subclasses from `core`; never throw bare strings. Findings are
-  data, not exceptions — a code violation is a normal result, not an error.
-- Comments explain *why*. The geometry and code-rule packages are the exception: cite the
+- Errors: throw `AppError` subclasses; never throw bare strings. The base class lives in
+  `geometry` rather than `core`, because `geometry` sits upstream and may not import from
+  `core`; `core` extends it. Findings are data, not exceptions — a code violation is a
+  normal result, not an error.
+- Comments explain _why_. The geometry and code-rule packages are the exception: cite the
   code section or the algorithm by name, because the next reader will need it.
 
 ## Testing
