@@ -102,7 +102,9 @@ describe('perpendiculars and rotation', () => {
     fc.assert(
       fc.property(anyPoint, (p) => {
         const ccw = perpendicularCcw(p);
-        expect(dot(p, ccw)).toBe(0);
+        // Math.abs, not toBe(0): a vector like (-3, 0) makes both products negative
+        // zero, and Object.is(-0, 0) is false even though the dot product is exact.
+        expect(Math.abs(dot(p, ccw))).toBe(0);
         expect(magnitudeSquared(ccw)).toBe(magnitudeSquared(p));
         // Four quarter turns return exactly to the start.
         expect(
