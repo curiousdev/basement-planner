@@ -70,16 +70,16 @@ model rather than a separate artifact that drifts away from it.
 
 Each discipline is a layer over the same geometry, not a separate drawing:
 
-| Layer | Contents |
-| --- | --- |
-| Architectural | Walls, rooms, openings, dimensions, finish schedule |
-| Egress & life safety | Escape openings, egress path, travel distance, alarms, extinguishers |
-| Electrical | Panel, circuits, receptacles, switches, luminaires, GFCI/AFCI zones, homeruns |
-| Plumbing | Supply, DWV, vents, riser diagram, fixture units, backwater valve, ejector pit |
-| Mechanical | Supply/return registers, ducts, dryer and bath exhaust, combustion/makeup air |
-| Framing & structure | Stud layout, headers, beam pockets, posts, footings, fire blocking |
-| Insulation & envelope | Assembly R-values, vapor retarder class, rim joist detail |
-| Demolition | Existing-to-remain vs. removed vs. new, drawn with the conventional line weights |
+| Layer                 | Contents                                                                         |
+| --------------------- | -------------------------------------------------------------------------------- |
+| Architectural         | Walls, rooms, openings, dimensions, finish schedule                              |
+| Egress & life safety  | Escape openings, egress path, travel distance, alarms, extinguishers             |
+| Electrical            | Panel, circuits, receptacles, switches, luminaires, GFCI/AFCI zones, homeruns    |
+| Plumbing              | Supply, DWV, vents, riser diagram, fixture units, backwater valve, ejector pit   |
+| Mechanical            | Supply/return registers, ducts, dryer and bath exhaust, combustion/makeup air    |
+| Framing & structure   | Stud layout, headers, beam pockets, posts, footings, fire blocking               |
+| Insulation & envelope | Assembly R-values, vapor retarder class, rim joist detail                        |
+| Demolition            | Existing-to-remain vs. removed vs. new, drawn with the conventional line weights |
 
 Layers are independently visible, printable, and checkable, and they cross-check each
 other — a bedroom added on the architectural layer demands a smoke alarm on the life
@@ -234,11 +234,11 @@ diff:
   "schemaVersion": 1,
   "project": { "name": "…", "address": "…", "jurisdiction": "us.co.denver" },
   "settings": { "displayUnits": "ft-in", "climateZone": "5B", "codeEdition": "irc-2021" },
-  "levels":   [ { "id": "…", "name": "Basement", "elevation": -2880, "floorToFloor": 3072 } ],
-  "entities": { /* walls, openings, rooms, fixtures, circuits, ducts, … keyed by id */ },
-  "layers":   [ /* visibility, print state, line weight overrides */ ],
-  "sheets":   [ /* sheet set definition, viewports, title block data */ ],
-  "revisions":[ /* named revisions with clouds and descriptions */ ]
+  "levels": [{ "id": "…", "name": "Basement", "elevation": -2880, "floorToFloor": 3072 }],
+  "entities": {/* walls, openings, rooms, fixtures, circuits, ducts, … keyed by id */},
+  "layers": [/* visibility, print state, line weight overrides */],
+  "sheets": [/* sheet set definition, viewports, title block data */],
+  "revisions": [/* named revisions with clouds and descriptions */],
 }
 ```
 
@@ -249,17 +249,17 @@ implicit ordering. Every schema change ships with a migration and a fixture.
 
 ## Roadmap
 
-| Phase | Scope | State |
-| --- | --- | --- |
-| 0 | Design docs, architecture, file format | ✅ this commit |
-| 1 | Monorepo scaffold, `geometry`, `core` model + schema + undo | ⬜ |
-| 2 | 2D editor: walls, openings, rooms, snapping, dimensions | ⬜ |
-| 3 | Rule engine + IRC pack, findings inspector | ⬜ |
-| 4 | Sheet composition, title blocks, schedules, PDF export | ⬜ |
-| 5 | Trade layers: electrical, plumbing, mechanical, framing | ⬜ |
-| 6 | 3D preview, clear-height map | ⬜ |
-| 7 | Takeoff and estimate, DXF/IFC export, revisions and deltas | ⬜ |
-| 8 | Import: PDF/DXF underlay, scan and photo tracing | ⬜ |
+| Phase | Scope                                                       | State          |
+| ----- | ----------------------------------------------------------- | -------------- |
+| 0     | Design docs, architecture, file format                      | ✅ this commit |
+| 1     | Monorepo scaffold, `geometry`, `core` model + schema + undo | ⬜             |
+| 2     | 2D editor: walls, openings, rooms, snapping, dimensions     | ⬜             |
+| 3     | Rule engine + IRC pack, findings inspector                  | ⬜             |
+| 4     | Sheet composition, title blocks, schedules, PDF export      | ⬜             |
+| 5     | Trade layers: electrical, plumbing, mechanical, framing     | ⬜             |
+| 6     | 3D preview, clear-height map                                | ⬜             |
+| 7     | Takeoff and estimate, DXF/IFC export, revisions and deltas  | ⬜             |
+| 8     | Import: PDF/DXF underlay, scan and photo tracing            | ⬜             |
 
 ---
 

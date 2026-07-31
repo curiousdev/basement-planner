@@ -1,0 +1,19 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# CLAUDE.md: don't commit generated drawings or build output.
+*.pdf
+*.dxf
+*.dwg
+out/
+playwright-report/
+test-results/
+
+.DS_Store
+.env
+.env.local
+*.log
+.vscode/
+.idea/
