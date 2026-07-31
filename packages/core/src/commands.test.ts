@@ -8,6 +8,8 @@ import {
   assemblyCommand,
   describeCommand,
   dimensionWallCommand,
+  moveWallEndpointCommand,
+  orientWallCommand,
 } from './commands.js';
 import { CoreError, EntityKindError, EntityNotFoundError } from './errors.js';
 import { createModel, getWall, listWalls } from './model.js';
@@ -273,5 +275,90 @@ describe('error surfaces', () => {
     expect(describeCommand({ kind: 'add-wall', wall: wallA })).toBe('Add wall');
     expect(describeCommand({ kind: 'remove-wall', wallId: 'w1' })).toBe('Remove wall');
     expect(describeCommand(assemblyCommand('w1', 'furring'))).toBe('Set assembly');
+  });
+});
+
+describe('typed dimension entry', () => {
+  it('sets a sill height and round-trips', () => {
+    const withOpening = createModel([
+      wallA,
+      {
+        id: 'o1',
+        kind: 'opening' as const,
+        wallId: 'w1',
+        position: feet(6),
+        width: inches(36),
+        height: inches(36),
+        sillHeight: inches(44),
+        openingType: 'window' as const,
+        swing: 'none' as const,
+        netClearWidth: null,
+        netClearHeight: null,
+      },
+    ]);
+    const { model } = applyCommand(withOpening, {
+      kind: 'set-opening-sill',
+      openingId: 'o1',
+      sillHeight: inches(40),
+    });
+    expect(getWall(model, 'w1')).toBeDefined();
+    expectRoundTrip(withOpening, {
+      kind: 'set-opening-sill',
+      openingId: 'o1',
+      sillHeight: inches(40),
+    });
+    expect(() =>
+      applyCommand(withOpening, {
+        kind: 'set-opening-sill',
+        openingId: 'o1',
+        sillHeight: inches(-1),
+      }),
+    ).toThrow(CoreError);
+  });
+
+  it('resizes equipment and round-trips', () => {
+    const withEquipment = createModel([
+      {
+        id: 'm1',
+        kind: 'equipment' as const,
+        equipmentType: 'duct-trunk' as const,
+        origin: vec2(feet(4), feet(4)),
+        width: inches(20),
+        depth: inches(8),
+        rotation: 0,
+        dropBelowJoists: inches(10),
+      },
+    ]);
+    expectRoundTrip(withEquipment, {
+      kind: 'resize-equipment',
+      equipmentId: 'm1',
+      width: inches(24),
+      depth: inches(10),
+    });
+    expect(() =>
+      applyCommand(withEquipment, {
+        kind: 'resize-equipment',
+        equipmentId: 'm1',
+        width: inches(0),
+        depth: inches(10),
+      }),
+    ).toThrow(CoreError);
+  });
+
+  it('points a wall along an exact bearing, holding start and length', () => {
+    const command = orientWallCommand(seeded, 'w1', Math.PI / 2);
+    const { model } = applyCommand(seeded, command);
+    const turned = getWall(model, 'w1');
+    expect(turned.start).toEqual(wallA.start);
+    expect(turned.end).toEqual(vec2(feet(0), feet(12)));
+    expect(wallLength(turned)).toBe(feet(12));
+  });
+
+  it('moves one endpoint to an exact coordinate, leaving the other alone', () => {
+    const command = moveWallEndpointCommand(seeded, 'w1', 'end', vec2(feet(9), feet(0)));
+    const { model } = applyCommand(seeded, command);
+    expect(getWall(model, 'w1').start).toEqual(wallA.start);
+    expect(wallLength(getWall(model, 'w1'))).toBe(feet(9));
+    expectRoundTrip(seeded, command);
   });
 });

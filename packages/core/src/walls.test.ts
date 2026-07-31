@@ -36,7 +36,8 @@ const eastWall = createWall({
 
 describe('assemblies', () => {
   it('uses the thickness the assembly actually builds out to', () => {
-    // 3-1/2" of stud plus 1/2" of gypsum a side.
+    // Project convention: exterior is 8" cast concrete; interior partitions are 2x4
+    // studs with 1/2" gypsum both faces, so 3-1/2" + 1/2" + 1/2" = 4-1/2" finished.
     expect(ASSEMBLY_THICKNESS['partition-2x4']).toBe(inches(4.5));
     expect(ASSEMBLY_THICKNESS['partition-2x6']).toBe(inches(6.5));
     expect(ASSEMBLY_THICKNESS.foundation).toBe(inches(8));

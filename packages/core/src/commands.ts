@@ -1,4 +1,4 @@
-import type { Length, Vec2 } from '@basement/geometry';
+import { type Length, type Vec2, polarPoint } from '@basement/geometry';
 
 import { CoreError } from './errors.js';
 import {
@@ -20,7 +20,12 @@ import type {
   Wall,
   WallAssembly,
 } from './schema.js';
-import { ASSEMBLY_THICKNESS, endPointForLength, isDegenerateWall } from './walls.js';
+import {
+  ASSEMBLY_THICKNESS,
+  endPointForLength,
+  isDegenerateWall,
+  wallLength,
+} from './walls.js';
 
 /**
  * Every edit is a command. Undo/redo, revision diffing, and eventually collaborative
@@ -76,6 +81,17 @@ export type Command =
       readonly kind: 'rotate-equipment';
       readonly equipmentId: string;
       readonly rotation: number;
+    }
+  | {
+      readonly kind: 'set-opening-sill';
+      readonly openingId: string;
+      readonly sillHeight: Length;
+    }
+  | {
+      readonly kind: 'resize-equipment';
+      readonly equipmentId: string;
+      readonly width: Length;
+      readonly depth: Length;
     };
 
 export interface CommandResult {
@@ -319,6 +335,47 @@ export function applyCommand(model: BasementModel, command: Command): CommandRes
         },
       };
     }
+
+    case 'set-opening-sill': {
+      const opening = getOpening(model, command.openingId);
+      if (command.sillHeight < 0) {
+        throw new CoreError(
+          'core.opening-sill',
+          'Sill height is measured above the finished floor and cannot be negative.',
+        );
+      }
+      return {
+        model: withEntity(model, { ...opening, sillHeight: command.sillHeight }),
+        inverse: {
+          kind: 'set-opening-sill',
+          openingId: opening.id,
+          sillHeight: opening.sillHeight,
+        },
+      };
+    }
+
+    case 'resize-equipment': {
+      const equipment = getEquipment(model, command.equipmentId);
+      if (command.width <= 0 || command.depth <= 0) {
+        throw new CoreError(
+          'core.equipment-size',
+          'Equipment width and depth must be positive.',
+        );
+      }
+      return {
+        model: withEntity(model, {
+          ...equipment,
+          width: command.width,
+          depth: command.depth,
+        }),
+        inverse: {
+          kind: 'resize-equipment',
+          equipmentId: equipment.id,
+          width: equipment.width,
+          depth: equipment.depth,
+        },
+      };
+    }
   }
 }
 
@@ -409,6 +466,41 @@ export function equipmentDefaultsFor(
   return EQUIPMENT_DEFAULTS[type];
 }
 
+/**
+ * Point a wall along an exact bearing, holding its start and its length. The end lands
+ * on the nearest grid point, so read `wallLength` back rather than assuming the length
+ * survived untouched.
+ */
+export function orientWallCommand(
+  model: BasementModel,
+  wallId: string,
+  radians: number,
+): Command {
+  const wall = getWall(model, wallId);
+  return {
+    kind: 'move-wall',
+    wallId,
+    start: wall.start,
+    end: polarPoint(wall.start, wallLength(wall), radians),
+  };
+}
+
+/** Move one endpoint of a wall to an exact coordinate, leaving the other alone. */
+export function moveWallEndpointCommand(
+  model: BasementModel,
+  wallId: string,
+  endpoint: 'start' | 'end',
+  point: Vec2,
+): Command {
+  const wall = getWall(model, wallId);
+  return {
+    kind: 'move-wall',
+    wallId,
+    start: endpoint === 'start' ? point : wall.start,
+    end: endpoint === 'end' ? point : wall.end,
+  };
+}
+
 export function describeCommand(command: Command): string {
   switch (command.kind) {
     case 'add-wall':
@@ -439,5 +531,9 @@ export function describeCommand(command: Command): string {
       return 'Move equipment';
     case 'rotate-equipment':
       return 'Rotate equipment';
+    case 'set-opening-sill':
+      return 'Set sill height';
+    case 'resize-equipment':
+      return 'Resize equipment';
   }
 }

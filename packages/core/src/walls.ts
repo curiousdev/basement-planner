@@ -22,7 +22,13 @@ import {
 import { CoreError } from './errors.js';
 import type { Wall, WallAssembly } from './schema.js';
 
-/** Finished thickness of each assembly, as it actually builds out. */
+/**
+ * Finished thickness of each assembly, as it actually builds out.
+ *
+ * Project convention: exterior/perimeter walls are 8" cast concrete, interior
+ * partitions are 2x4 studs with 1/2" gypsum on both faces — 3-1/2" + 1/2" + 1/2", so
+ * 4-1/2" finished, not the 3-1/2" of the studs alone.
+ */
 export const ASSEMBLY_THICKNESS: Readonly<Record<WallAssembly, Length>> = {
   foundation: inches(8),
   'partition-2x4': inches(4.5),
@@ -31,10 +37,10 @@ export const ASSEMBLY_THICKNESS: Readonly<Record<WallAssembly, Length>> = {
 };
 
 export const ASSEMBLY_LABEL: Readonly<Record<WallAssembly, string>> = {
-  foundation: '8" foundation',
-  'partition-2x4': '2x4 partition',
-  'partition-2x6': '2x6 partition',
-  furring: 'Furred wall',
+  foundation: '8" concrete',
+  'partition-2x4': '2x4 + gyp both faces',
+  'partition-2x6': '2x6 + gyp both faces',
+  furring: 'Furring + gyp',
 };
 
 export interface CreateWallOptions {

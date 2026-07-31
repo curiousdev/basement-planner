@@ -142,3 +142,15 @@ export function midpoint(a: Vec2, b: Vec2): Vec2 {
 export function manhattanDistance(a: Vec2, b: Vec2): Length {
   return length(Math.abs(a.x - b.x) + Math.abs(a.y - b.y));
 }
+
+/**
+ * A point at `distance` from `origin` along `radians`, measured counter-clockwise from
+ * +x. Trigonometric, therefore rounded onto the grid — the entry point for typing a
+ * length and a bearing instead of clicking.
+ */
+export function polarPoint(origin: Vec2, distance: Length, radians: number): Vec2 {
+  return {
+    x: length(Math.round(origin.x + Math.cos(radians) * distance)),
+    y: length(Math.round(origin.y + Math.sin(radians) * distance)),
+  };
+}
